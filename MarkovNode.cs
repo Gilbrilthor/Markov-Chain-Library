@@ -17,7 +17,7 @@ namespace MarkovChainLib
             set;
         }
 
-        public virtual List<string> Suffix
+        public virtual List<string> SuffixList
         {
             get;
             set;
@@ -35,8 +35,25 @@ namespace MarkovChainLib
             set;
         }
 
+        /// <summary>
+        /// Gets the tail of the markov node.
+        /// </summary>
+        /// <value>
+        /// The tail, or the last string in the list of suffixes.
+        /// </value>
+        public virtual string Tail
+        {
+            get
+            {
+                return SuffixList[SuffixList.Count - 1];
+            }
+        }
+
         public MarkovNode(NodeType type, string prefix, params string[] suffixes)
         {
+            Type = type;
+            Prefix = prefix;
+            SuffixList = new List<string>(suffixes);
         }
 
         /// <summary>
@@ -66,7 +83,7 @@ namespace MarkovChainLib
             var sb = new StringBuilder(this.Prefix.ToLower());
 
             // Add each suffix
-            foreach (var item in this.Suffix)
+            foreach (var item in this.SuffixList)
             {
                 sb.Append(item.ToLower());
             }
@@ -101,6 +118,29 @@ namespace MarkovChainLib
         public override int GetHashCode()
         {
             return getCompareString().GetHashCode();
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            // Create a hash code 4 characters long
+            var strHashTail = GetHashCode().ToString().Substring(0, 4);
+            var sb = new StringBuilder(strHashTail);
+
+            // Attach the prefix
+            sb.AppendFormat(": {0}", Prefix);
+
+            // Attach all suffixes
+            foreach (var suffix in SuffixList)
+            {
+                sb.AppendFormat(" {0}", suffix);
+            }
+            return sb.ToString();
         }
     }
 }
